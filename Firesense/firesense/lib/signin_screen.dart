@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'signup_screen.dart';
+import 'home_screen.dart'; // ✅ Add this line to import your target screen
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -34,13 +35,18 @@ class _SignInScreenState extends State<SignInScreen> {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
 
-      // Show success message
-      ScaffoldMessenger.of(
+      // ✅ Redirect to HomeScreen after successful login
+      Navigator.pushReplacement(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Signed in successfully!')));
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+
+      // Optional: success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Signed in successfully!')),
+      );
     } on FirebaseAuthException catch (e) {
       String message;
-
       switch (e.code) {
         case 'invalid-email':
           message = 'Please enter a valid email address.';
@@ -63,7 +69,6 @@ class _SignInScreenState extends State<SignInScreen> {
         default:
           message = 'Sign in failed. ${e.message}';
       }
-
       _showErrorDialog(message);
     } catch (e) {
       _showErrorDialog('An unexpected error occurred. Please try again.');
@@ -73,82 +78,81 @@ class _SignInScreenState extends State<SignInScreen> {
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            contentPadding: EdgeInsets.zero,
-            backgroundColor: Colors.transparent,
-            content: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Header with close button
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 8, 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Expanded(
-                          child: Text(
-                            'Error',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close, color: Colors.grey),
-                          onPressed: () => Navigator.pop(context),
-                          padding: const EdgeInsets.all(4),
-                          constraints: const BoxConstraints(
-                            minWidth: 32,
-                            minHeight: 32,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Message content
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                    child: Text(
-                      message,
-                      style: const TextStyle(fontSize: 15),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-
-                  // Button
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red[800],
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                        child: const Text(
-                          'Okay',
-                          style: TextStyle(fontSize: 16),
+      builder: (context) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        backgroundColor: Colors.transparent,
+        content: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header with close button
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 16, 8, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Error',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.grey),
+                      onPressed: () => Navigator.pop(context),
+                      padding: const EdgeInsets.all(4),
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+
+              // Message content
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                child: Text(
+                  message,
+                  style: const TextStyle(fontSize: 15),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
+              // Button
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[800],
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: const Text(
+                      'Okay',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
+        ),
+      ),
     );
   }
 
